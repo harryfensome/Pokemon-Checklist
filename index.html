@@ -7,421 +7,691 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Pokémon Cards">
     <link rel="apple-touch-icon" href="https://freepngimg.com/thumb/pokemon/88185-emoticon-art-pikachu-yellow-drawing-pixel.png">
-    <title>Pokémon Card Checklist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Pokémon TCG Checklist</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        :root {
+            --bg:       #0d0f1a;
+            --surface:  #161929;
+            --surface2: #1e2236;
+            --border:   #252840;
+            --border2:  #2e3352;
+            --accent:   #f5c542;
+            --accent2:  #e07b2a;
+            --holo:     #a78bfa;
+            --holo2:    #c084fc;
+            --text:     #e8eaf0;
+            --muted:    #6b7199;
+            --check:    #34d399;
+            --radius:   10px;
         }
-        
+
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
             min-height: 100vh;
-            padding: 15px;
-            padding-bottom: 30px;
+            padding: 0 0 50px;
+            color: var(--text);
         }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            background: white;
-            padding: 20px;
+
+        /* ── Top header ── */
+        .main-header {
+            background: linear-gradient(160deg, #1a1040 0%, #0d0f1a 70%);
+            border-bottom: 2px solid var(--accent);
+            padding: 28px 20px 20px;
             text-align: center;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.7);
         }
-        
-        .header h1 {
-            font-size: 24px;
-            color: #dc0a2d;
+
+        .main-header h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(245,197,66,0.5);
+            letter-spacing: 1px;
+            line-height: 1.6;
+        }
+
+        .main-header h1 span {
+            display: block;
+            font-size: 7px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        /* Overall bar */
+        .overall-wrap { margin-top: 14px; }
+
+        .overall-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
             margin-bottom: 5px;
+            font-size: 12px;
         }
-        
-        .header p {
+
+        .overall-label { color: var(--muted); font-weight: 700; }
+
+        .overall-pct {
+            font-family: 'Press Start 2P', monospace;
             font-size: 13px;
-            color: #666;
+            color: var(--accent);
         }
-        
-        .stats {
-            background: rgba(255,255,255,0.95);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 13px;
-            color: #333;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .pokemon-list {
-            background: white;
-            border-radius: 12px;
+
+        .bar-bg {
+            background: var(--border2);
+            border-radius: 99px;
+            height: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+            transition: width 0.35s cubic-bezier(.4,0,.2,1);
+            box-shadow: 0 0 8px rgba(245,197,66,0.35);
+        }
+
+        /* ── Set list ── */
+        .set-list { padding: 14px 12px 0; }
+
+        /* ── Set block ── */
+        .set-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .set-block.open { border-color: var(--border2); }
+
+        /* Toggle */
+        .set-toggle {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            display: block;
+            text-align: left;
+        }
+
+        .set-toggle-inner {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px 10px;
+        }
+
+        .set-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .set-pct {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        .set-arrow {
+            color: var(--muted);
+            font-size: 11px;
+            transition: transform 0.25s;
+            display: inline-block;
+        }
+
+        .set-block.open .set-arrow { transform: rotate(180deg); }
+
+        /* Mini bar in toggle */
+        .set-mini-bar-wrap { padding: 0 16px 12px; }
+
+        .set-mini-bar-bg {
+            background: var(--border2);
+            border-radius: 99px;
+            height: 4px;
+            overflow: hidden;
+        }
+
+        .set-mini-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+            transition: width 0.35s ease;
+        }
+
+        /* Body */
+        .set-body {
+            display: none;
+            border-top: 1px solid var(--border);
+        }
+
+        .set-block.open .set-body { display: block; }
+
+        /* Column header */
+        .col-header-row {
+            display: grid;
+            align-items: center;
+            padding: 7px 14px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+        }
+
+        .col-header-row .h-card { text-align: center; }
+        .col-header-row .h-holo { text-align: center; color: var(--holo); }
+
+        /* Section label */
+        .section-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 7px;
+            letter-spacing: 1px;
+            color: var(--muted);
+            padding: 10px 14px 5px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Card row — layout variants */
         .pokemon-item {
             display: grid;
-            grid-template-columns: 1fr auto auto auto auto;
-            gap: 10px;
             align-items: center;
-            padding: 12px 15px;
-            border-bottom: 1px solid #f0f0f0;
-            background: white;
-            transition: background 0.2s;
+            padding: 0 14px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            min-height: 46px;
+            transition: background 0.15s;
         }
-        
-        .pokemon-item:active {
-            background: #f9f9f9;
+
+        .pokemon-item:last-child { border-bottom: none; }
+        .pokemon-item:active { background: var(--surface2); }
+
+        /* owned states */
+        .pokemon-item.row-owned      { background: rgba(52,211,153,0.05);  border-bottom-color: rgba(52,211,153,0.12); }
+        .pokemon-item.row-fully-owned { background: rgba(245,197,66,0.06); border-bottom-color: rgba(245,197,66,0.15); }
+
+        .card-num {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 7px;
+            color: var(--border2);
         }
-        
-        .pokemon-item:last-child {
-            border-bottom: none;
-        }
-        
+
+        .holo-card .card-num { color: var(--holo); }
+
         .pokemon-name {
-            font-weight: 600;
-            color: #333;
-            font-size: 15px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            padding-right: 4px;
         }
-        
-        .checkbox-group {
+
+        .row-owned .pokemon-name       { color: var(--check); }
+        .row-fully-owned .pokemon-name { color: var(--accent); }
+
+        /* Checkboxes */
+        .check-cell {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            gap: 3px;
-            min-width: 50px;
         }
-        
-        .checkbox-label {
-            font-size: 9px;
-            color: #888;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        
+
         input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            border: 2px solid var(--border2);
+            background: var(--bg);
             cursor: pointer;
-            accent-color: #dc0a2d;
+            position: relative;
+            transition: all 0.15s;
+            flex-shrink: 0;
         }
-        
-        .na {
-            color: #ddd;
-            font-size: 18px;
-            font-weight: bold;
+
+        input[type="checkbox"]:checked {
+            background: var(--check);
+            border-color: var(--check);
+            box-shadow: 0 0 8px rgba(52,211,153,0.4);
         }
-        
-        .reset-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 2px solid white;
-            padding: 10px 20px;
-            border-radius: 8px;
+
+        input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 6px; top: 3px;
+            width: 7px; height: 12px;
+            border: 2.5px solid #fff;
+            border-top: none;
+            border-left: none;
+            transform: rotate(45deg);
+        }
+
+        .holo-cell input[type="checkbox"] {
+            border-color: var(--holo);
+            box-shadow: 0 0 5px rgba(167,139,250,0.2);
+        }
+
+        .holo-cell input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, var(--holo), var(--holo2));
+            border-color: var(--holo2);
+            box-shadow: 0 0 10px rgba(192,132,252,0.5);
+        }
+
+        .empty-dash {
+            color: var(--border2);
             font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 15px auto;
-            display: block;
+            text-align: center;
+            width: 100%;
+            line-height: 46px;
         }
-        
+
+        /* Grid layouts */
+        .g-plain { grid-template-columns: 30px 1fr 50px; }
+        .g-holo  { grid-template-columns: 30px 1fr 50px 50px; }
+
+        /* Reset */
+        .reset-wrap { text-align: center; margin-top: 24px; }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid var(--border2);
+            color: var(--muted);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 7px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+        }
+
         .reset-btn:active {
-            background: rgba(255,255,255,0.3);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎴 Pokémon TCG Checklist</h1>
-            <p>Base • Fossil • Jungle</p>
+
+<div class="main-header">
+    <h1>POKÉMON TCG<span>Collection Tracker</span></h1>
+    <div class="overall-wrap">
+        <div class="overall-row">
+            <span class="overall-label">OVERALL</span>
+            <span class="overall-pct" id="overallPct">0%</span>
         </div>
-        
-        <div class="stats" id="stats">Loading...</div>
-        
-        <div class="pokemon-list" id="pokemonList"></div>
-        
-        <button class="reset-btn" onclick="if(confirm('Reset all checkboxes?')) { localStorage.removeItem('pokemonChecklist'); location.reload(); }">
-            Reset Progress
-        </button>
+        <div class="bar-bg">
+            <div class="bar-fill" id="overallBar" style="width:0%"></div>
+        </div>
     </div>
- 
-    <script>
-        const pokemonData = [
-            {name: "Abra", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Aerodactyl", base: null, fossil: false, jungle: null, holo: false},
-            {name: "Alakazam", base: false, fossil: null, jungle: null, holo: false},
-            {name: "Arbok", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Arcanine", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Articuno", base: null, fossil: false, jungle: null, holo: false},
-            {name: "Beedrill", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Bellsprout", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Bill", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Blastoise", base: false, fossil: null, jungle: null, holo: false},
-            {name: "Bulbasaur", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Butterfree", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Caterpie", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Chansey", base: false, fossil: null, jungle: null, holo: false},
-            {name: "Charizard", base: true, fossil: null, jungle: null, holo: true},
-            {name: "Charmander", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Charmeleon", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Clefable", base: null, fossil: null, jungle: false, holo: false},
-            {name: "Clefairy", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Clefairy Doll", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Cloyster", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Computer Search", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Cubone", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Defender", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Devolution Spray", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Dewgong", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Diglett", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Ditto", base: null, fossil: false, jungle: null, holo: false},
-            {name: "Dodrio", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Doduo", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Dragonair", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Dragonite", base: null, fossil: false, jungle: null, holo: false},
-            {name: "Dratini", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Drowzee", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Dugtrio", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Eevee", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Ekans", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Electabuzz", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Electrode", base: false, fossil: null, jungle: false, holo: false},
-            {name: "Energy Removal", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Energy Retrieval", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Energy Search", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Exeggcute", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Exeggutor", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Farfetch'd", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Fearow", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Flareon", base: null, fossil: null, jungle: false, holo: true},
-            {name: "Full Heal", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Gambler", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Gastly", base: true, fossil: true, jungle: null, holo: null},
-            {name: "Gengar", base: null, fossil: false, jungle: null, holo: false},
-            {name: "Geodude", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Gloom", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Golbat", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Goldeen", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Golduck", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Golem", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Graveler", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Grimer", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Growlithe", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Gust of Wind", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Gyarados", base: false, fossil: null, jungle: null, holo: false},
-            {name: "Haunter", base: true, fossil: false, jungle: null, holo: false},
-            {name: "Hitmonchan", base: true, fossil: null, jungle: null, holo: true},
-            {name: "Hitmonlee", base: null, fossil: false, jungle: null, holo: false},
-            {name: "Horsea", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Hypno", base: null, fossil: false, jungle: null, holo: false},
-            {name: "Imposter Professor Oak", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Item Finder", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Ivysaur", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Jigglypuff", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Jolteon", base: null, fossil: null, jungle: false, holo: true},
-            {name: "Jynx", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Kabuto", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Kabutops", base: null, fossil: false, jungle: null, holo: false},
-            {name: "Kadabra", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Kakuna", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Kangaskhan", base: null, fossil: null, jungle: false, holo: true},
-            {name: "Kingler", base: null, fossil: false, jungle: null, holo: null},
-            {name: "Koffing", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Krabby", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Lapras", base: null, fossil: false, jungle: null, holo: true},
-            {name: "Lass", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Lickitung", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Machamp", base: true, fossil: null, jungle: null, holo: true},
-            {name: "Machoke", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Machop", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Magikarp", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Magmar", base: false, fossil: true, jungle: null, holo: null},
-            {name: "Magnemite", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Magneton", base: false, fossil: false, jungle: null, holo: true},
-            {name: "Maintenance", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Mankey", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Marowak", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Meowth", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Metapod", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Mew", base: null, fossil: null, jungle: null, holo: false},
-            {name: "Mewtwo", base: false, fossil: null, jungle: null, holo: false},
-            {name: "Moltres", base: null, fossil: false, jungle: null, holo: false},
-            {name: "Mr. Fuji", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Mr. Mime", base: null, fossil: null, jungle: false, holo: true},
-            {name: "Muk", base: null, fossil: false, jungle: null, holo: true},
-            {name: "Mysterious Fossil", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Nidoking", base: false, fossil: null, jungle: null, holo: false},
-            {name: "Nidoqueen", base: null, fossil: null, jungle: false, holo: true},
-            {name: "Nidoran F", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Nidoran M", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Nidorina", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Nidorino", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Ninetails", base: false, fossil: null, jungle: null, holo: false},
-            {name: "Oddish", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Omanyte", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Omastar", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Onix", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Paras", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Parasect", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Persian", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Pidgeot", base: null, fossil: null, jungle: false, holo: false},
-            {name: "Pidgeotto", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Pidgey", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Pikachu", base: false, fossil: null, jungle: false, holo: null},
-            {name: "Pinsir", base: null, fossil: null, jungle: false, holo: false},
-            {name: "PlusPower", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Poke Ball", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Pokedex", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Pokemon Breeder", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Pokemon Center", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Pokemon Flute", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Pokemon Trader", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Poliwag", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Poliwhirl", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Poliwrath", base: false, fossil: null, jungle: null, holo: false},
-            {name: "Ponyta", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Porygon", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Potion", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Primeape", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Professor Oak", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Psyduck", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Raichu", base: false, fossil: false, jungle: null, holo: false},
-            {name: "Rapidash", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Raticate", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Rattata", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Recycle", base: null, fossil: false, jungle: null, holo: null},
-            {name: "Revive", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Rhydon", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Rhyhorn", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Sandshrew", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Sandslash", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Scoop Up", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Scyther", base: null, fossil: null, jungle: false, holo: false},
-            {name: "Seadra", base: null, fossil: false, jungle: null, holo: null},
-            {name: "Seaking", base: null, fossil: null, jungle: false, holo: null},
-            {name: "Seel", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Shellder", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Slowbro", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Slowpoke", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Snorlax", base: null, fossil: null, jungle: true, holo: false},
-            {name: "Spearow", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Squirtle", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Starmie", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Staryu", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Super Energy Removal", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Super Potion", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Switch", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Tangela", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Tauros", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Tentacool", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Tentacruel", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Vaporeon", base: null, fossil: null, jungle: false, holo: true},
-            {name: "Venomoth", base: null, fossil: null, jungle: false, holo: true},
-            {name: "Venonat", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Venusaur", base: false, fossil: null, jungle: null, holo: false},
-            {name: "Victreebel", base: null, fossil: null, jungle: false, holo: true},
-            {name: "Vileplume", base: null, fossil: null, jungle: false, holo: true},
-            {name: "Voltorb", base: false, fossil: null, jungle: null, holo: null},
-            {name: "Vulpix", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Wartortle", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Weedle", base: true, fossil: null, jungle: null, holo: null},
-            {name: "Weepinbell", base: null, fossil: null, jungle: true, holo: null},
-            {name: "Weezing", base: null, fossil: true, jungle: null, holo: null},
-            {name: "Wigglytuff", base: null, fossil: null, jungle: false, holo: false},
-            {name: "Zapdos", base: false, fossil: false, jungle: null, holo: false},
-            {name: "Zubat", base: null, fossil: true, jungle: null, holo: null}
-        ];
- 
-        function updateStats() {
-            const savedData = JSON.parse(localStorage.getItem('pokemonChecklist') || '{}');
-            let checked = 0;
-            let total = 0;
-            
-            pokemonData.forEach(pokemon => {
-                ['base', 'fossil', 'jungle', 'holo'].forEach(set => {
-                    if (pokemon[set] !== null) {
-                        total++;
-                        if (savedData[pokemon.name] && savedData[pokemon.name][set]) {
-                            checked++;
-                        }
-                    }
-                });
-            });
-            
-            const percentage = total > 0 ? Math.round((checked / total) * 100) : 0;
-            document.getElementById('stats').textContent = `Progress: ${checked} / ${total} cards (${percentage}%)`;
+</div>
+
+<div class="set-list" id="setList"></div>
+
+<div class="reset-wrap">
+    <button class="reset-btn" onclick="resetAll()">✕ RESET ALL</button>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+//  SET DATA
+//
+//  Each set has a `dualPrint` flag:
+//    dualPrint: true  → the set has cards that exist as BOTH
+//                       holo AND non-holo prints.
+//                       Cards with hasHolo:true get two checkboxes.
+//                       Cards with hasHolo:false get one + a dash.
+//
+//    dualPrint: false → every card gets ONE checkbox only.
+//                       No holo column shown at all.
+//
+//  Sections use object {s:'Label'} entries.
+// ─────────────────────────────────────────────────────────────
+
+const SETS = [
+{
+    id: 'base', name: 'Base Set', dualPrint: false,
+    cards: [
+        {s:'Holo Rare'},
+        [1,'Alakazam'],[2,'Blastoise'],[3,'Chansey'],[4,'Charizard'],
+        [5,'Clefairy'],[6,'Gyarados'],[7,'Hitmonchan'],[8,'Machamp'],
+        [9,'Magneton'],[10,'Mewtwo'],[11,'Nidoking'],[12,'Ninetales'],
+        [13,'Poliwrath'],[14,'Raichu'],[15,'Venusaur'],[16,'Zapdos'],
+        {s:'Non-Holo Rare'},
+        [17,'Beedrill'],[18,'Dragonair'],[19,'Dugtrio'],[20,'Electabuzz'],
+        [21,'Electrode'],[22,'Pidgeot'],[23,'Arcanine'],[24,'Charmeleon'],
+        [25,'Dewgong'],[26,'Haunter'],[27,'Ivysaur'],[28,'Jynx'],
+        [29,'Kadabra'],[30,'Kakuna'],[31,'Poliwhirl'],[32,'Wartortle'],
+        {s:'Uncommon'},
+        [33,'Abra'],[34,'Clefairy Doll'],[35,'Computer Search'],
+        [36,'Devolution Spray'],[37,'Impostor Professor Oak'],[38,'Item Finder'],
+        [39,'Lass'],[40,'Magmar'],[41,'Mewtwo'],[42,'Mysterious Fossil'],
+        [43,'Pokemon Breeder'],[44,'Pokemon Trader'],[45,'Scoop Up'],
+        [46,'Super Energy Removal'],[47,'Defender'],[48,'Energy Retrieval'],
+        [49,'Full Heal'],[50,'Maintenance'],[51,'PlusPower'],
+        [52,'Pokemon Center'],[53,'Pokemon Flute'],[54,'Pokedex'],
+        [55,'Professor Oak'],[56,'Revive'],[57,'Super Potion'],
+        [58,'Bill'],[59,'Energy Removal'],[60,'Gust of Wind'],
+        [61,'Potion'],[62,'Switch'],
+        {s:'Common'},
+        [63,'Caterpie'],[64,'Charmander'],[65,'Diglett'],[66,'Doduo'],
+        [67,'Drowzee'],[68,'Gastly'],[69,'Koffing'],[70,'Machop'],
+        [71,'Magnemite'],[72,'Metapod'],[73,'Nidoran ♂'],[74,'Onix'],
+        [75,'Pidgey'],[76,'Pikachu'],[77,'Poliwag'],[78,'Ponyta'],
+        [79,'Rattata'],[80,'Sandshrew'],[81,'Squirtle'],[82,'Starmie'],
+        [83,'Tangela'],[84,'Voltorb'],[85,'Vulpix'],[86,'Weedle'],
+        {s:'Energy'},
+        [87,'Double Colorless Energy'],[88,'Fire Energy'],[89,'Grass Energy'],
+        [90,'Lightning Energy'],[91,'Psychic Energy'],[92,'Water Energy'],
+        [93,'Fighting Energy'],
+    ]
+},
+{
+    id: 'fossil', name: 'Fossil', dualPrint: true,
+    cards: [
+        {s:'Holo Rare'},
+        [1,'Aerodactyl',true],[2,'Articuno',true],[3,'Ditto',true],
+        [4,'Dragonite',true],[5,'Gengar',true],[6,'Haunter',true],
+        [7,'Hitmonlee',true],[8,'Hypno',true],[9,'Kabutops',true],
+        [10,'Lapras',true],[11,'Magneton',true],[12,'Moltres',true],
+        [13,'Muk',true],[14,'Raichu',true],[15,'Zapdos',true],
+        {s:'Uncommon'},
+        [31,'Arbok',false],[32,'Cloyster',false],[33,'Gastly',false],
+        [34,'Golbat',false],[35,'Golduck',false],[36,'Golem',false],
+        [37,'Graveler',false],[38,'Kingler',false],[39,'Magmar',false],
+        [40,'Omastar',false],[41,'Sandslash',false],[42,'Seadra',false],
+        {s:'Common'},
+        [43,'Grimer',false],[44,'Kabuto',false],[45,'Krabby',false],
+        [46,'Omanyte',false],[47,'Psyduck',false],[48,'Shellder',false],
+        [49,'Slowpoke',false],[50,'Tentacool',false],[51,'Weezing',false],
+        [52,'Zubat',false],[53,'Ekans',false],[54,'Koffing',false],
+        [55,'Geodude',false],[56,'Machop',false],[57,'Horsea',false],
+        [58,'Slowbro',false],[59,'Tentacruel',false],
+        {s:'Trainer'},
+        [60,'Mr. Fuji',false],[61,'Gambler',false],[62,'Mysterious Fossil',false],
+    ]
+},
+{
+    id: 'jungle', name: 'Jungle', dualPrint: true,
+    cards: [
+        {s:'Holo Rare'},
+        [1,'Clefable',true],[2,'Electrode',true],[3,'Flareon',true],
+        [4,'Jolteon',true],[5,'Kangaskhan',true],[6,'Mr. Mime',true],
+        [7,'Nidoqueen',true],[8,'Pidgeot',true],[9,'Pinsir',true],
+        [10,'Scyther',true],[11,'Snorlax',true],[12,'Vaporeon',true],
+        [13,'Venomoth',true],[14,'Victreebel',true],[15,'Vileplume',true],
+        [16,'Wigglytuff',true],
+        {s:'Uncommon'},
+        [33,'Butterfree',false],[34,'Dodrio',false],[35,'Exeggutor',false],
+        [36,'Fearow',false],[37,'Kangaskhan',false],[38,'Parasect',false],
+        [39,'Primeape',false],[40,'Rapidash',false],[41,'Rhydon',false],
+        [42,'Seaking',false],[43,'Tauros',false],[44,'Weepinbell',false],
+        {s:'Common'},
+        [45,'Bellsprout',false],[46,'Cubone',false],[47,'Eevee',false],
+        [48,'Ekans',false],[49,'Goldeen',false],[50,'Jigglypuff',false],
+        [51,'Mankey',false],[52,'Meowth',false],[53,'Nidoran ♀',false],
+        [54,'Oddish',false],[55,'Paras',false],[56,'Pidgey',false],
+        [57,'Pikachu',false],[58,'Rhyhorn',false],[59,'Spearow',false],
+        [60,'Venonat',false],[61,'Weepinbell',false],[62,'Wigglytuff',false],
+        [63,'Weedle',false],
+        {s:'Trainer'},
+        [64,'Poke Ball',false],
+    ]
+},
+{
+    id: 'neo', name: 'Neo Discovery', dualPrint: true,
+    cards: [
+        {s:'Holo Rare'},
+        [1,'Espeon',true],[2,'Forretress',true],[3,'Hitmontop',true],
+        [4,'Houndoom',true],[5,'Houndour',true],[6,'Kabutops',true],
+        [7,'Magnemite',true],[8,'Politoed',true],[9,'Poliwrath',true],
+        [10,'Scizor',true],[11,'Smeargle',true],[12,'Tyranitar',true],
+        [13,'Umbreon',true],[14,'Unown A',true],[15,'Ursaring',true],
+        [16,'Wobbuffet',true],[17,'Yanma',true],
+        {s:'Uncommon & Rare'},
+        [18,'Beedrill',false],[19,'Butterfree',false],[20,'Corsola',false],
+        [21,'Eevee',false],[22,'Houndour',false],[23,'Igglybuff',false],
+        [24,'Kakuna',false],[25,'Metapod',false],[26,'Omastar',false],
+        [27,'Poliwhirl',false],[28,'Pupitar',false],[29,'Scyther',false],
+        [30,'Unown D',false],[31,'Unown F',false],[32,'Unown M',false],
+        [33,'Unown N',false],[34,'Unown U',false],[35,'Xatu',false],
+        [36,'Yanma',false],
+        {s:'Common'},
+        [37,'Caterpie',false],[38,'Dunsparce',false],[39,'Hoppip',false],
+        [40,'Kabuto',false],[41,'Larvitar',false],[42,'Mareep',false],
+        [43,'Natu',false],[44,'Omanyte',false],[45,'Pineco',false],
+        [46,'Poliwag',false],[47,'Sentret',false],[48,'Spinarak',false],
+        [49,'Teddiursa',false],[50,'Tyrogue',false],[51,'Unown E',false],
+        [52,'Unown I',false],[53,'Unown O',false],[54,'Weedle',false],
+        [55,'Wooper',false],
+        {s:'Trainer & Energy'},
+        [56,'Fossil Egg',false],[57,'Hyper Devolution Spray',false],
+        [58,'Ruin Wall',false],[59,'Energy Ark',false],
+    ]
+},
+{
+    id: 'southern', name: 'Southern Islands', dualPrint: false,
+    cards: [
+        {s:'Tropical Island'},
+        [1,'Mew'],[2,'Pidgeot'],[3,'Onix'],
+        [4,'Togepi'],[5,'Ivysaur'],[6,'Raticate'],
+        {s:'Rainbow Island'},
+        [7,'Ledyba'],[8,'Jigglypuff'],[9,'Butterfree'],
+        [10,'Tentacruel'],[11,'Marill'],[12,'Lapras'],
+        [13,'Exeggutor'],[14,'Slowking'],[15,'Wartortle'],
+        [16,'Lickitung'],[17,'Vileplume'],[18,'Primeape'],
+    ]
+},
+];
+
+// ─────────────────────────────────────────────────────────────
+//  STORAGE
+// ─────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'pokemon_tcg_v2';
+
+function loadState() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch(e) { return {}; }
+}
+
+function saveState(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+let state = loadState();
+
+const rk = (id, n) => id + '_' + n + '_r';
+const hk = (id, n) => id + '_' + n + '_h';
+
+// ─────────────────────────────────────────────────────────────
+//  PROGRESS
+// ─────────────────────────────────────────────────────────────
+function setProgress(set) {
+    const cards = set.cards.filter(c => Array.isArray(c));
+    let owned = 0;
+    cards.forEach(([n]) => { if (state[rk(set.id, n)]) owned++; });
+    return { owned, total: cards.length };
+}
+
+function updateOverall() {
+    let tot = 0, own = 0;
+    SETS.forEach(set => { const p = setProgress(set); tot += p.total; own += p.owned; });
+    const pct = tot > 0 ? Math.round((own / tot) * 100) : 0;
+    document.getElementById('overallPct').textContent = pct + '%';
+    document.getElementById('overallBar').style.width = pct + '%';
+}
+
+function updateSetHeader(set) {
+    const p   = setProgress(set);
+    const pct = p.total > 0 ? Math.round((p.owned / p.total) * 100) : 0;
+    const el  = document.getElementById('pct_' + set.id);
+    const bar = document.getElementById('bar_' + set.id);
+    if (el)  el.textContent = pct + '%';
+    if (bar) bar.style.width = pct + '%';
+}
+
+// ─────────────────────────────────────────────────────────────
+//  ROW STATE
+// ─────────────────────────────────────────────────────────────
+function getRowClass(set, num, hasHolo, gc) {
+    const r = !!state[rk(set.id, num)];
+    const h = set.dualPrint && hasHolo && !!state[hk(set.id, num)];
+    return 'pokemon-item ' + gc +
+        (set.dualPrint && hasHolo ? ' holo-card' : '') +
+        (r && h ? ' row-fully-owned' : r ? ' row-owned' : '');
+}
+
+function refreshRow(set, num, hasHolo, gc) {
+    const row = document.getElementById('row_' + set.id + '_' + num);
+    if (row) row.className = getRowClass(set, num, hasHolo, gc);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  BUILD
+// ─────────────────────────────────────────────────────────────
+function buildAll() {
+    const container = document.getElementById('setList');
+    container.innerHTML = '';
+
+    SETS.forEach(set => {
+        const gc = set.dualPrint ? 'g-holo' : 'g-plain';
+        const p   = setProgress(set);
+        const pct = p.total > 0 ? Math.round((p.owned / p.total) * 100) : 0;
+
+        // Block
+        const block = document.createElement('div');
+        block.className = 'set-block';
+        block.id = 'block_' + set.id;
+
+        // Toggle
+        const toggle = document.createElement('button');
+        toggle.className = 'set-toggle';
+        toggle.innerHTML = `
+            <div class="set-toggle-inner">
+                <span class="set-name">${set.name}</span>
+                <span class="set-pct" id="pct_${set.id}">${pct}%</span>
+                <span class="set-arrow">▼</span>
+            </div>
+            <div class="set-mini-bar-wrap">
+                <div class="set-mini-bar-bg">
+                    <div class="set-mini-bar-fill" id="bar_${set.id}" style="width:${pct}%"></div>
+                </div>
+            </div>`;
+        toggle.addEventListener('click', () => block.classList.toggle('open'));
+        block.appendChild(toggle);
+
+        // Body
+        const body = document.createElement('div');
+        body.className = 'set-body';
+
+        // Col header
+        const ch = document.createElement('div');
+        ch.className = 'col-header-row ' + gc;
+        if (set.dualPrint) {
+            ch.innerHTML = '<div></div><div></div><div class="h-card">Card</div><div class="h-holo">Holo ✦</div>';
+        } else {
+            ch.innerHTML = '<div></div><div></div><div class="h-card">Card</div>';
         }
- 
-        const listContainer = document.getElementById('pokemonList');
-        
-        pokemonData.forEach((pokemon) => {
-            const item = document.createElement('div');
-            item.className = 'pokemon-item';
-            
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'pokemon-name';
-            nameDiv.textContent = pokemon.name;
-            item.appendChild(nameDiv);
-            
-            ['base', 'fossil', 'jungle', 'holo'].forEach(set => {
-                const group = document.createElement('div');
-                group.className = 'checkbox-group';
-                
-                const label = document.createElement('div');
-                label.className = 'checkbox-label';
-                label.textContent = set;
-                group.appendChild(label);
-                
-                if (pokemon[set] === null) {
-                    const na = document.createElement('div');
-                    na.className = 'na';
-                    na.textContent = '—';
-                    group.appendChild(na);
-                } else {
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.checked = pokemon[set];
-                    checkbox.id = `${pokemon.name}-${set}`;
-                    
-                    checkbox.addEventListener('change', (e) => {
-                        const data = JSON.parse(localStorage.getItem('pokemonChecklist') || '{}');
-                        if (!data[pokemon.name]) data[pokemon.name] = {};
-                        data[pokemon.name][set] = e.target.checked;
-                        localStorage.setItem('pokemonChecklist', JSON.stringify(data));
-                        updateStats();
+        body.appendChild(ch);
+
+        // Cards
+        set.cards.forEach(entry => {
+            if (!Array.isArray(entry)) {
+                const sh = document.createElement('div');
+                sh.className = 'section-label';
+                sh.textContent = entry.s;
+                body.appendChild(sh);
+                return;
+            }
+
+            const num     = entry[0];
+            const name    = entry[1];
+            const hasHolo = set.dualPrint ? !!entry[2] : false;
+
+            const row = document.createElement('div');
+            row.id        = 'row_' + set.id + '_' + num;
+            row.className = getRowClass(set, num, hasHolo, gc);
+
+            // Number
+            const numEl = document.createElement('div');
+            numEl.className = 'card-num';
+            numEl.textContent = String(num).padStart(2, '0');
+
+            // Name
+            const nameEl = document.createElement('div');
+            nameEl.className = 'pokemon-name';
+            nameEl.textContent = name;
+
+            // Card checkbox
+            const regCell = document.createElement('div');
+            regCell.className = 'check-cell';
+            const regCb = document.createElement('input');
+            regCb.type = 'checkbox';
+            regCb.checked = !!state[rk(set.id, num)];
+            regCb.addEventListener('change', () => {
+                state[rk(set.id, num)] = regCb.checked;
+                saveState(state);
+                refreshRow(set, num, hasHolo, gc);
+                updateSetHeader(set);
+                updateOverall();
+            });
+            regCell.appendChild(regCb);
+
+            row.appendChild(numEl);
+            row.appendChild(nameEl);
+            row.appendChild(regCell);
+
+            // Holo column — only rendered for dualPrint sets
+            if (set.dualPrint) {
+                const holoCell = document.createElement('div');
+                holoCell.className = 'check-cell holo-cell';
+                if (hasHolo) {
+                    const holoCb = document.createElement('input');
+                    holoCb.type = 'checkbox';
+                    holoCb.checked = !!state[hk(set.id, num)];
+                    holoCb.addEventListener('change', () => {
+                        state[hk(set.id, num)] = holoCb.checked;
+                        saveState(state);
+                        refreshRow(set, num, hasHolo, gc);
                     });
-                    
-                    group.appendChild(checkbox);
+                    holoCell.appendChild(holoCb);
+                } else {
+                    holoCell.innerHTML = '<div class="empty-dash">—</div>';
                 }
-                
-                item.appendChild(group);
-            });
-            
-            listContainer.appendChild(item);
+                row.appendChild(holoCell);
+            }
+
+            body.appendChild(row);
         });
-        
-        // Load saved state
-        const savedData = JSON.parse(localStorage.getItem('pokemonChecklist') || '{}');
-        Object.keys(savedData).forEach(pokemonName => {
-            Object.keys(savedData[pokemonName]).forEach(set => {
-                const checkbox = document.getElementById(`${pokemonName}-${set}`);
-                if (checkbox) {
-                    checkbox.checked = savedData[pokemonName][set];
-                }
-            });
-        });
-        
-        updateStats();
-    </script>
+
+        block.appendChild(body);
+        container.appendChild(block);
+    });
+
+    updateOverall();
+}
+
+function resetAll() {
+    if (!confirm('Reset ALL progress across all sets?')) return;
+    state = {};
+    saveState(state);
+    buildAll();
+}
+
+buildAll();
+</script>
 </body>
 </html>
