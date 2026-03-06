@@ -1,5 +1,5 @@
 # Pokemon-Checklist
-### Pokémon TCG Checklist
+### Pokémon TCG Checklist: Base, Fossil & Jungle
 ---
 
 A simple HTML checklist for tracking cards from the Base, Jungle, and Fossil Pokémon TCG sets. Includes holo indicators, progress tracking.
