@@ -36,7 +36,6 @@
             color: var(--text);
         }
 
-        /* ── Top header ── */
         .main-header {
             background: linear-gradient(160deg, #1a1040 0%, #0d0f1a 70%);
             border-bottom: 2px solid var(--accent);
@@ -64,7 +63,6 @@
             margin-top: 5px;
         }
 
-        /* Overall bar */
         .overall-wrap { margin-top: 14px; }
 
         .overall-row {
@@ -98,10 +96,8 @@
             box-shadow: 0 0 8px rgba(245,197,66,0.35);
         }
 
-        /* ── Set list ── */
         .set-list { padding: 14px 12px 0; }
 
-        /* ── Set block ── */
         .set-block {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -113,7 +109,6 @@
 
         .set-block.open { border-color: var(--border2); }
 
-        /* Toggle */
         .set-toggle {
             width: 100%;
             background: transparent;
@@ -154,7 +149,6 @@
 
         .set-block.open .set-arrow { transform: rotate(180deg); }
 
-        /* Mini bar in toggle */
         .set-mini-bar-wrap { padding: 0 16px 12px; }
 
         .set-mini-bar-bg {
@@ -171,7 +165,6 @@
             transition: width 0.35s ease;
         }
 
-        /* Body */
         .set-body {
             display: none;
             border-top: 1px solid var(--border);
@@ -179,7 +172,6 @@
 
         .set-block.open .set-body { display: block; }
 
-        /* Column header */
         .col-header-row {
             display: grid;
             align-items: center;
@@ -196,7 +188,6 @@
         .col-header-row .h-card { text-align: center; }
         .col-header-row .h-holo { text-align: center; color: var(--holo); }
 
-        /* Section label */
         .section-label {
             font-family: 'Press Start 2P', monospace;
             font-size: 7px;
@@ -207,7 +198,6 @@
             border-bottom: 1px solid var(--border);
         }
 
-        /* Card row — layout variants */
         .pokemon-item {
             display: grid;
             align-items: center;
@@ -221,9 +211,8 @@
         .pokemon-item:last-child { border-bottom: none; }
         .pokemon-item:active { background: var(--surface2); }
 
-        /* owned states */
-        .pokemon-item.row-owned      { background: rgba(52,211,153,0.05);  border-bottom-color: rgba(52,211,153,0.12); }
-        .pokemon-item.row-fully-owned { background: rgba(245,197,66,0.06); border-bottom-color: rgba(245,197,66,0.15); }
+        .pokemon-item.row-owned       { background: rgba(52,211,153,0.05);  border-bottom-color: rgba(52,211,153,0.12); }
+        .pokemon-item.row-fully-owned { background: rgba(245,197,66,0.06);  border-bottom-color: rgba(245,197,66,0.15); }
 
         .card-num {
             font-family: 'Press Start 2P', monospace;
@@ -243,7 +232,6 @@
         .row-owned .pokemon-name       { color: var(--check); }
         .row-fully-owned .pokemon-name { color: var(--accent); }
 
-        /* Checkboxes */
         .check-cell {
             display: flex;
             justify-content: center;
@@ -300,11 +288,9 @@
             line-height: 46px;
         }
 
-        /* Grid layouts */
         .g-plain { grid-template-columns: 30px 1fr 50px; }
         .g-holo  { grid-template-columns: 30px 1fr 50px 50px; }
 
-        /* Reset */
         .reset-wrap { text-align: center; margin-top: 24px; }
 
         .reset-btn {
@@ -320,10 +306,7 @@
             letter-spacing: 1px;
         }
 
-        .reset-btn:active {
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-        }
+        .reset-btn:active { border-color: #ff6b6b; color: #ff6b6b; }
     </style>
 </head>
 <body>
@@ -349,59 +332,67 @@
 
 <script>
 // ─────────────────────────────────────────────────────────────
-//  SET DATA
+//  SET DATA — sourced directly from Pokellector PDFs
 //
-//  Each set has a `dualPrint` flag:
-//    dualPrint: true  → the set has cards that exist as BOTH
-//                       holo AND non-holo prints.
-//                       Cards with hasHolo:true get two checkboxes.
-//                       Cards with hasHolo:false get one + a dash.
+//  dualPrint: true  → set has cards in BOTH holo & non-holo print
+//                     hasHolo:true  = Card + Holo checkboxes
+//                     hasHolo:false = Card checkbox + dash
 //
-//    dualPrint: false → every card gets ONE checkbox only.
-//                       No holo column shown at all.
+//  dualPrint: false → single checkbox per card, no holo column
 //
-//  Sections use object {s:'Label'} entries.
+//  Card format: [number, name] or [number, name, hasHolo]
+//  Sections:    {s: 'Label'}
 // ─────────────────────────────────────────────────────────────
 
 const SETS = [
 {
     id: 'base', name: 'Base Set', dualPrint: false,
     cards: [
+        // ── #001–016 Holo Rare ──
         {s:'Holo Rare'},
         [1,'Alakazam'],[2,'Blastoise'],[3,'Chansey'],[4,'Charizard'],
         [5,'Clefairy'],[6,'Gyarados'],[7,'Hitmonchan'],[8,'Machamp'],
-        [9,'Magneton'],[10,'Mewtwo'],[11,'Nidoking'],[12,'Ninetales'],
+        [9,'Magneton'],[10,'Mewtwo'],[11,'Nidoking'],[12,'Ninetails'],
         [13,'Poliwrath'],[14,'Raichu'],[15,'Venusaur'],[16,'Zapdos'],
-        {s:'Non-Holo Rare'},
+        // ── #017–042 Uncommon/Rare ──
+        {s:'Uncommon & Rare'},
         [17,'Beedrill'],[18,'Dragonair'],[19,'Dugtrio'],[20,'Electabuzz'],
-        [21,'Electrode'],[22,'Pidgeot'],[23,'Arcanine'],[24,'Charmeleon'],
-        [25,'Dewgong'],[26,'Haunter'],[27,'Ivysaur'],[28,'Jynx'],
-        [29,'Kadabra'],[30,'Kakuna'],[31,'Poliwhirl'],[32,'Wartortle'],
-        {s:'Uncommon'},
-        [33,'Abra'],[34,'Clefairy Doll'],[35,'Computer Search'],
-        [36,'Devolution Spray'],[37,'Impostor Professor Oak'],[38,'Item Finder'],
-        [39,'Lass'],[40,'Magmar'],[41,'Mewtwo'],[42,'Mysterious Fossil'],
-        [43,'Pokemon Breeder'],[44,'Pokemon Trader'],[45,'Scoop Up'],
-        [46,'Super Energy Removal'],[47,'Defender'],[48,'Energy Retrieval'],
-        [49,'Full Heal'],[50,'Maintenance'],[51,'PlusPower'],
-        [52,'Pokemon Center'],[53,'Pokemon Flute'],[54,'Pokedex'],
-        [55,'Professor Oak'],[56,'Revive'],[57,'Super Potion'],
-        [58,'Bill'],[59,'Energy Removal'],[60,'Gust of Wind'],
-        [61,'Potion'],[62,'Switch'],
+        [21,'Electrode'],[22,'Pidgeotto'],[23,'Arcanine'],[24,'Charmeleon'],
+        [25,'Dewgong'],[26,'Dratini'],[27,"Farfetch'd"],[28,'Growlithe'],
+        [29,'Haunter'],[30,'Ivysaur'],[31,'Jynx'],[32,'Kadabra'],
+        [33,'Kakuna'],[34,'Machoke'],[35,'Magikarp'],[36,'Magmar'],
+        [37,'Nidorino'],[38,'Poliwhirl'],[39,'Porygon'],[40,'Raticate'],
+        [41,'Seel'],[42,'Wartortle'],
+        // ── #043–069 Common ──
         {s:'Common'},
-        [63,'Caterpie'],[64,'Charmander'],[65,'Diglett'],[66,'Doduo'],
-        [67,'Drowzee'],[68,'Gastly'],[69,'Koffing'],[70,'Machop'],
-        [71,'Magnemite'],[72,'Metapod'],[73,'Nidoran ♂'],[74,'Onix'],
-        [75,'Pidgey'],[76,'Pikachu'],[77,'Poliwag'],[78,'Ponyta'],
-        [79,'Rattata'],[80,'Sandshrew'],[81,'Squirtle'],[82,'Starmie'],
-        [83,'Tangela'],[84,'Voltorb'],[85,'Vulpix'],[86,'Weedle'],
+        [43,'Abra'],[44,'Bulbasaur'],[45,'Caterpie'],[46,'Charmander'],
+        [47,'Diglett'],[48,'Doduo'],[49,'Drowzee'],[50,'Gastly'],
+        [51,'Koffing'],[52,'Machop'],[53,'Magnemite'],[54,'Metapod'],
+        [55,'Nidoran M'],[56,'Onix'],[57,'Pidgey'],[58,'Pikachu'],
+        [59,'Poliwag'],[60,'Ponyta'],[61,'Rattata'],[62,'Sandshrew'],
+        [63,'Squirtle'],[64,'Starmie'],[65,'Staryu'],[66,'Tangela'],
+        [67,'Voltorb'],[68,'Vulpix'],[69,'Weedle'],
+        // ── #070–095 Trainer ──
+        {s:'Trainer'},
+        [70,'Clefairy Doll'],[71,'Computer Search'],[72,'Devolution Spray'],
+        [73,'Imposter Professor Oak'],[74,'Item Finder'],[75,'Lass'],
+        [76,'Pokémon Breeder'],[77,'Pokémon Trader'],[78,'Scoop Up'],
+        [79,'Super Energy Removal'],[80,'Defender'],[81,'Energy Retrieval'],
+        [82,'Full Heal'],[83,'Maintenance'],[84,'PlusPower'],
+        [85,'Pokémon Center'],[86,'Pokémon Flute'],[87,'Pokédex'],
+        [88,'Professor Oak'],[89,'Revive'],[90,'Super Potion'],
+        [91,'Bill'],[92,'Energy Removal'],[93,'Gust of Wind'],
+        [94,'Potion'],[95,'Switch'],
+        // ── #096–102 Energy ──
         {s:'Energy'},
-        [87,'Double Colorless Energy'],[88,'Fire Energy'],[89,'Grass Energy'],
-        [90,'Lightning Energy'],[91,'Psychic Energy'],[92,'Water Energy'],
-        [93,'Fighting Energy'],
+        [96,'Double Colorless Energy'],[97,'Fighting Energy'],[98,'Fire Energy'],
+        [99,'Grass Energy'],[100,'Lightning Energy'],[101,'Psychic Energy'],
+        [102,'Water Energy'],
     ]
 },
 {
+    // Fossil: #01–15 are holo prints, #16–30 are the same cards non-holo.
+    // We list each card ONCE with hasHolo:true. #31+ are non-holo only.
     id: 'fossil', name: 'Fossil', dualPrint: true,
     cards: [
         {s:'Holo Rare'},
@@ -416,17 +407,19 @@ const SETS = [
         [37,'Graveler',false],[38,'Kingler',false],[39,'Magmar',false],
         [40,'Omastar',false],[41,'Sandslash',false],[42,'Seadra',false],
         {s:'Common'},
-        [43,'Grimer',false],[44,'Kabuto',false],[45,'Krabby',false],
-        [46,'Omanyte',false],[47,'Psyduck',false],[48,'Shellder',false],
-        [49,'Slowpoke',false],[50,'Tentacool',false],[51,'Weezing',false],
-        [52,'Zubat',false],[53,'Ekans',false],[54,'Koffing',false],
-        [55,'Geodude',false],[56,'Machop',false],[57,'Horsea',false],
-        [58,'Slowbro',false],[59,'Tentacruel',false],
+        [43,'Slowbro',false],[44,'Tentacruel',false],[45,'Weezing',false],
+        [46,'Ekans',false],[47,'Geodude',false],[48,'Grimer',false],
+        [49,'Horsea',false],[50,'Kabuto',false],[51,'Krabby',false],
+        [52,'Omanyte',false],[53,'Psyduck',false],[54,'Shellder',false],
+        [55,'Slowpoke',false],[56,'Tentacool',false],[57,'Zubat',false],
         {s:'Trainer'},
-        [60,'Mr. Fuji',false],[61,'Gambler',false],[62,'Mysterious Fossil',false],
+        [58,'Mr. Fuji',false],[59,'Energy Search',false],[60,'Gambler',false],
+        [61,'Recycle',false],[62,'Mysterious Fossil',false],
     ]
 },
 {
+    // Jungle: #01–16 are holo prints, #17–32 are the same cards non-holo.
+    // Listed once each with hasHolo:true. #33+ are non-holo only.
     id: 'jungle', name: 'Jungle', dualPrint: true,
     cards: [
         {s:'Holo Rare'},
@@ -438,22 +431,24 @@ const SETS = [
         [16,'Wigglytuff',true],
         {s:'Uncommon'},
         [33,'Butterfree',false],[34,'Dodrio',false],[35,'Exeggutor',false],
-        [36,'Fearow',false],[37,'Kangaskhan',false],[38,'Parasect',false],
-        [39,'Primeape',false],[40,'Rapidash',false],[41,'Rhydon',false],
-        [42,'Seaking',false],[43,'Tauros',false],[44,'Weepinbell',false],
+        [36,'Fearow',false],[37,'Gloom',false],[38,'Lickitung',false],
+        [39,'Marowak',false],[40,'Nidorina',false],[41,'Parasect',false],
+        [42,'Persian',false],[43,'Primeape',false],[44,'Rapidash',false],
+        [45,'Rhydon',false],[46,'Seaking',false],[47,'Tauros',false],
+        [48,'Weepinbell',false],
         {s:'Common'},
-        [45,'Bellsprout',false],[46,'Cubone',false],[47,'Eevee',false],
-        [48,'Ekans',false],[49,'Goldeen',false],[50,'Jigglypuff',false],
-        [51,'Mankey',false],[52,'Meowth',false],[53,'Nidoran ♀',false],
-        [54,'Oddish',false],[55,'Paras',false],[56,'Pidgey',false],
-        [57,'Pikachu',false],[58,'Rhyhorn',false],[59,'Spearow',false],
-        [60,'Venonat',false],[61,'Weepinbell',false],[62,'Wigglytuff',false],
-        [63,'Weedle',false],
+        [49,'Bellsprout',false],[50,'Cubone',false],[51,'Eevee',false],
+        [52,'Exeggcute',false],[53,'Goldeen',false],[54,'Jigglypuff',false],
+        [55,'Mankey',false],[56,'Meowth',false],[57,'Nidoran F',false],
+        [58,'Oddish',false],[59,'Paras',false],[60,'Pikachu',false],
+        [61,'Rhyhorn',false],[62,'Spearow',false],[63,'Venonat',false],
         {s:'Trainer'},
-        [64,'Poke Ball',false],
+        [64,'Poké Ball',false],
     ]
 },
 {
+    // Neo Discovery: #01–17 are holo prints, #18–36 same cards non-holo.
+    // Listed once each with hasHolo:true. #37+ are non-holo only.
     id: 'neo', name: 'Neo Discovery', dualPrint: true,
     cards: [
         {s:'Holo Rare'},
@@ -464,24 +459,29 @@ const SETS = [
         [13,'Umbreon',true],[14,'Unown A',true],[15,'Ursaring',true],
         [16,'Wobbuffet',true],[17,'Yanma',true],
         {s:'Uncommon & Rare'},
-        [18,'Beedrill',false],[19,'Butterfree',false],[20,'Corsola',false],
-        [21,'Eevee',false],[22,'Houndour',false],[23,'Igglybuff',false],
-        [24,'Kakuna',false],[25,'Metapod',false],[26,'Omastar',false],
-        [27,'Poliwhirl',false],[28,'Pupitar',false],[29,'Scyther',false],
-        [30,'Unown D',false],[31,'Unown F',false],[32,'Unown M',false],
-        [33,'Unown N',false],[34,'Unown U',false],[35,'Xatu',false],
+        [18,'Beedrill',false],[19,'Butterfree',false],[20,'Espeon',false],
+        [21,'Forretress',false],[22,'Hitmontop',false],[23,'Houndoom',false],
+        [24,'Houndour',false],[25,'Kabutops',false],[26,'Magnemite',false],
+        [27,'Politoed',false],[28,'Poliwrath',false],[29,'Scizor',false],
+        [30,'Smeargle',false],[31,'Tyranitar',false],[32,'Umbreon',false],
+        [33,'Unown A',false],[34,'Ursaring',false],[35,'Wobbuffet',false],
         [36,'Yanma',false],
         {s:'Common'},
-        [37,'Caterpie',false],[38,'Dunsparce',false],[39,'Hoppip',false],
-        [40,'Kabuto',false],[41,'Larvitar',false],[42,'Mareep',false],
-        [43,'Natu',false],[44,'Omanyte',false],[45,'Pineco',false],
-        [46,'Poliwag',false],[47,'Sentret',false],[48,'Spinarak',false],
-        [49,'Teddiursa',false],[50,'Tyrogue',false],[51,'Unown E',false],
-        [52,'Unown I',false],[53,'Unown O',false],[54,'Weedle',false],
-        [55,'Wooper',false],
+        [37,'Corsola',false],[38,'Eevee',false],[39,'Houndour',false],
+        [40,'Igglybuff',false],[41,'Kakuna',false],[42,'Metapod',false],
+        [43,'Omastar',false],[44,'Poliwhirl',false],[45,'Pupitar',false],
+        [46,'Scyther',false],[47,'Unown D',false],[48,'Unown F',false],
+        [49,'Unown M',false],[50,'Unown N',false],[51,'Unown U',false],
+        [52,'Xatu',false],[53,'Caterpie',false],[54,'Dunsparce',false],
+        [55,'Hoppip',false],[56,'Kabuto',false],[57,'Larvitar',false],
+        [58,'Mareep',false],[59,'Natu',false],[60,'Omanyte',false],
+        [61,'Pineco',false],[62,'Poliwag',false],[63,'Sentret',false],
+        [64,'Spinarak',false],[65,'Teddiursa',false],[66,'Tyrogue',false],
+        [67,'Unown E',false],[68,'Unown I',false],[69,'Unown O',false],
+        [70,'Weedle',false],[71,'Wooper',false],
         {s:'Trainer & Energy'},
-        [56,'Fossil Egg',false],[57,'Hyper Devolution Spray',false],
-        [58,'Ruin Wall',false],[59,'Energy Ark',false],
+        [72,'Fossil Egg',false],[73,'Hyper Devolution Spray',false],
+        [74,'Ruin Wall',false],[75,'Energy Ark',false],
     ]
 },
 {
@@ -567,16 +567,14 @@ function buildAll() {
     container.innerHTML = '';
 
     SETS.forEach(set => {
-        const gc = set.dualPrint ? 'g-holo' : 'g-plain';
+        const gc  = set.dualPrint ? 'g-holo' : 'g-plain';
         const p   = setProgress(set);
         const pct = p.total > 0 ? Math.round((p.owned / p.total) * 100) : 0;
 
-        // Block
         const block = document.createElement('div');
         block.className = 'set-block';
         block.id = 'block_' + set.id;
 
-        // Toggle
         const toggle = document.createElement('button');
         toggle.className = 'set-toggle';
         toggle.innerHTML = `
@@ -593,11 +591,10 @@ function buildAll() {
         toggle.addEventListener('click', () => block.classList.toggle('open'));
         block.appendChild(toggle);
 
-        // Body
         const body = document.createElement('div');
         body.className = 'set-body';
 
-        // Col header
+        // Column header
         const ch = document.createElement('div');
         ch.className = 'col-header-row ' + gc;
         if (set.dualPrint) {
@@ -607,7 +604,6 @@ function buildAll() {
         }
         body.appendChild(ch);
 
-        // Cards
         set.cards.forEach(entry => {
             if (!Array.isArray(entry)) {
                 const sh = document.createElement('div');
@@ -625,17 +621,14 @@ function buildAll() {
             row.id        = 'row_' + set.id + '_' + num;
             row.className = getRowClass(set, num, hasHolo, gc);
 
-            // Number
             const numEl = document.createElement('div');
             numEl.className = 'card-num';
             numEl.textContent = String(num).padStart(2, '0');
 
-            // Name
             const nameEl = document.createElement('div');
             nameEl.className = 'pokemon-name';
             nameEl.textContent = name;
 
-            // Card checkbox
             const regCell = document.createElement('div');
             regCell.className = 'check-cell';
             const regCb = document.createElement('input');
@@ -654,7 +647,6 @@ function buildAll() {
             row.appendChild(nameEl);
             row.appendChild(regCell);
 
-            // Holo column — only rendered for dualPrint sets
             if (set.dualPrint) {
                 const holoCell = document.createElement('div');
                 holoCell.className = 'check-cell holo-cell';
