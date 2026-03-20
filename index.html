@@ -332,29 +332,18 @@
 
 <script>
 // ─────────────────────────────────────────────────────────────
-//  SET DATA — sourced directly from Pokellector PDFs
-//
-//  dualPrint: true  → set has cards in BOTH holo & non-holo print
-//                     hasHolo:true  = Card + Holo checkboxes
-//                     hasHolo:false = Card checkbox + dash
-//
-//  dualPrint: false → single checkbox per card, no holo column
-//
-//  Card format: [number, name] or [number, name, hasHolo]
-//  Sections:    {s: 'Label'}
+//  SET DATA
 // ─────────────────────────────────────────────────────────────
 
 const SETS = [
 {
     id: 'base', name: 'Base Set', dualPrint: false,
     cards: [
-        // ── #001–016 Holo Rare ──
         {s:'Holo Rare'},
         [1,'Alakazam'],[2,'Blastoise'],[3,'Chansey'],[4,'Charizard'],
         [5,'Clefairy'],[6,'Gyarados'],[7,'Hitmonchan'],[8,'Machamp'],
         [9,'Magneton'],[10,'Mewtwo'],[11,'Nidoking'],[12,'Ninetails'],
         [13,'Poliwrath'],[14,'Raichu'],[15,'Venusaur'],[16,'Zapdos'],
-        // ── #017–042 Uncommon/Rare ──
         {s:'Uncommon & Rare'},
         [17,'Beedrill'],[18,'Dragonair'],[19,'Dugtrio'],[20,'Electabuzz'],
         [21,'Electrode'],[22,'Pidgeotto'],[23,'Arcanine'],[24,'Charmeleon'],
@@ -363,7 +352,6 @@ const SETS = [
         [33,'Kakuna'],[34,'Machoke'],[35,'Magikarp'],[36,'Magmar'],
         [37,'Nidorino'],[38,'Poliwhirl'],[39,'Porygon'],[40,'Raticate'],
         [41,'Seel'],[42,'Wartortle'],
-        // ── #043–069 Common ──
         {s:'Common'},
         [43,'Abra'],[44,'Bulbasaur'],[45,'Caterpie'],[46,'Charmander'],
         [47,'Diglett'],[48,'Doduo'],[49,'Drowzee'],[50,'Gastly'],
@@ -372,7 +360,6 @@ const SETS = [
         [59,'Poliwag'],[60,'Ponyta'],[61,'Rattata'],[62,'Sandshrew'],
         [63,'Squirtle'],[64,'Starmie'],[65,'Staryu'],[66,'Tangela'],
         [67,'Voltorb'],[68,'Vulpix'],[69,'Weedle'],
-        // ── #070–095 Trainer ──
         {s:'Trainer'},
         [70,'Clefairy Doll'],[71,'Computer Search'],[72,'Devolution Spray'],
         [73,'Imposter Professor Oak'],[74,'Item Finder'],[75,'Lass'],
@@ -383,7 +370,6 @@ const SETS = [
         [88,'Professor Oak'],[89,'Revive'],[90,'Super Potion'],
         [91,'Bill'],[92,'Energy Removal'],[93,'Gust of Wind'],
         [94,'Potion'],[95,'Switch'],
-        // ── #096–102 Energy ──
         {s:'Energy'},
         [96,'Double Colorless Energy'],[97,'Fighting Energy'],[98,'Fire Energy'],
         [99,'Grass Energy'],[100,'Lightning Energy'],[101,'Psychic Energy'],
@@ -391,8 +377,6 @@ const SETS = [
     ]
 },
 {
-    // Fossil: #01–15 are holo prints, #16–30 are the same cards non-holo.
-    // We list each card ONCE with hasHolo:true. #31+ are non-holo only.
     id: 'fossil', name: 'Fossil', dualPrint: true,
     cards: [
         {s:'Holo Rare'},
@@ -418,8 +402,6 @@ const SETS = [
     ]
 },
 {
-    // Jungle: #01–16 are holo prints, #17–32 are the same cards non-holo.
-    // Listed once each with hasHolo:true. #33+ are non-holo only.
     id: 'jungle', name: 'Jungle', dualPrint: true,
     cards: [
         {s:'Holo Rare'},
@@ -447,8 +429,6 @@ const SETS = [
     ]
 },
 {
-    // Neo Discovery: #01–17 are holo prints, #18–36 same cards non-holo.
-    // Listed once each with hasHolo:true. #37+ are non-holo only.
     id: 'neo', name: 'Neo Discovery', dualPrint: true,
     cards: [
         {s:'Holo Rare'},
@@ -517,13 +497,20 @@ const rk = (id, n) => id + '_' + n + '_r';
 const hk = (id, n) => id + '_' + n + '_h';
 
 // ─────────────────────────────────────────────────────────────
-//  PROGRESS
+//  PROGRESS — BUG FIX: holo checkboxes now count toward total
 // ─────────────────────────────────────────────────────────────
 function setProgress(set) {
     const cards = set.cards.filter(c => Array.isArray(c));
-    let owned = 0;
-    cards.forEach(([n]) => { if (state[rk(set.id, n)]) owned++; });
-    return { owned, total: cards.length };
+    let owned = 0, total = 0;
+    cards.forEach(([n, , hasHolo]) => {
+        total++;
+        if (state[rk(set.id, n)]) owned++;
+        if (set.dualPrint && hasHolo) {
+            total++;
+            if (state[hk(set.id, n)]) owned++;
+        }
+    });
+    return { owned, total };
 }
 
 function updateOverall() {
@@ -594,7 +581,6 @@ function buildAll() {
         const body = document.createElement('div');
         body.className = 'set-body';
 
-        // Column header
         const ch = document.createElement('div');
         ch.className = 'col-header-row ' + gc;
         if (set.dualPrint) {
@@ -658,6 +644,8 @@ function buildAll() {
                         state[hk(set.id, num)] = holoCb.checked;
                         saveState(state);
                         refreshRow(set, num, hasHolo, gc);
+                        updateSetHeader(set);
+                        updateOverall();
                     });
                     holoCell.appendChild(holoCb);
                 } else {
